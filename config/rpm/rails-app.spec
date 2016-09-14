@@ -3,7 +3,7 @@
 
 %define app_name     cryptopus
 %define app_version  0.1
-%define ruby_version 2.2.4
+#%define ruby_version 2.2.3
 
 ### optional libs
 # set things you need to 1
@@ -39,7 +39,7 @@
 
 %define build_number BUILD_NUMBER
 %define wwwdir      /var/www/vhosts
-%define ruby_bindir /opt/ruby-%{ruby_version}/bin
+%define ruby_bindir /opt/ruby-"%{?RUBY_VERSION}"/bin
 %define bundle_cmd  RAILS_ENV=production %{ruby_bindir}/bundle
 
 ##### start of the specfile
@@ -53,11 +53,12 @@ License:	NonPublic
 URL:		https://www.puzzle.ch
 Source0:	%{name}-%{version}.tar.gz
 
-BuildRequires:  opt-ruby-%{ruby_version}-rubygem-bundler
+#BuildRequires:  opt-ruby-%{ruby_version}-rubygem-bundler
 BuildRequires:  libxml2-devel
 BuildRequires:  libxslt-devel
 BuildRequires:  sqlite-devel
 BuildRequires:	mysql-devel
+BuildRequires:  augeas-devel
 %if %{use_pgsql}
 BuildRequires:	postgresql-devel
 %endif
@@ -71,10 +72,8 @@ Requires: sphinx
 %if %{use_memcached}
 Requires: memcached
 %endif
-Requires:	opt-ruby-%{ruby_version}-rubygem-passenger
+Requires: rubygems
 Requires:	logrotate
-Requires:	opt-ruby-%{ruby_version}
-Requires:	opt-ruby-%{ruby_version}-rubygem-bundler
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-%(id -un)
 
 %description
@@ -91,6 +90,10 @@ getent passwd %{name} > /dev/null || \
   -c "Rails Application %{name}" %{name}
 exit 0
 
+gem install rvm
+gem install bundler
+gem install passenger
+rvm use 2.2
 
 %prep
 # prepare the source to install it during the package building
