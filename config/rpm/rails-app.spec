@@ -3,7 +3,7 @@
 
 %define app_name     cryptopus
 %define app_version  0.1
-%define ruby_version 1.9.3
+%define ruby_version 2.2.4
 
 ### optional libs
 # set things you need to 1
