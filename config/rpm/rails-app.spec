@@ -3,7 +3,7 @@
 
 %define app_name     cryptopus
 %define app_version  0.1
-#%define ruby_version 2.2.3
+%define ruby_version 2.2.3
 
 ### optional libs
 # set things you need to 1
@@ -39,7 +39,11 @@
 
 %define build_number BUILD_NUMBER
 %define wwwdir      /var/www/vhosts
+%if "%{?USE_RUBY}" == "rvm"
+%define use_rvm 1
+%else
 %define ruby_bindir /opt/ruby-"%{?RUBY_VERSION}"/bin
+%endif
 %define bundle_cmd  RAILS_ENV=production %{ruby_bindir}/bundle
 
 ##### start of the specfile
@@ -53,7 +57,6 @@ License:	NonPublic
 URL:		https://www.puzzle.ch
 Source0:	%{name}-%{version}.tar.gz
 
-#BuildRequires:  opt-ruby-%{ruby_version}-rubygem-bundler
 BuildRequires:  libxml2-devel
 BuildRequires:  libxslt-devel
 BuildRequires:  sqlite-devel
@@ -71,6 +74,9 @@ Requires: sphinx
 %endif
 %if %{use_memcached}
 Requires: memcached
+%endif
+%if %{use_rvm}
+Requires: rvm
 %endif
 Requires: rubygems
 Requires:	logrotate
@@ -90,10 +96,12 @@ getent passwd %{name} > /dev/null || \
   -c "Rails Application %{name}" %{name}
 exit 0
 
+%if %{use_rvm}
 gem install rvm
 gem install bundler
 gem install passenger
 rvm use 2.2
+%endif
 
 %prep
 # prepare the source to install it during the package building
@@ -165,7 +173,10 @@ echo "# Reindex sphinx for %{name}
 " > $RPM_BUILD_ROOT/%{_sysconfdir}/cron.d/%{name}
 %endif
 
+%if %{use_rvm} == ""
 export PATH=%{ruby_bindir}:$PATH
+%endif
+
 ([ ! -f ~/.gemrc ] || grep -q no-ri ~/.gemrc) || echo "gem: --no-ri --no-rdoc" >> ~/.gemrc
 %{bundle_cmd} install --deployment --without %{bundle_without_groups}
 %{bundle_cmd} exec rake assets:precompile
