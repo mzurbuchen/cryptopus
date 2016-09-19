@@ -125,7 +125,7 @@ curl -O https://raw.githubusercontent.com/wayneeseguin/rvm/master/binscripts/rvm
 curl -O https://raw.githubusercontent.com/wayneeseguin/rvm/master/binscripts/rvm-installer.asc
 gpg --verify rvm-installer.asc && bash rvm-installer stable --path $RPM_BUILD_ROOT/.rvm
 
-mv /root/.profile $RPM_BUILD_ROOT/%{wwwdir}/%{name} 
+mv $HOME/.profile $RPM_BUILD_ROOT/%{wwwdir}/%{name} 
 
 . $RPM_BUILD_ROOT/.rvm/scripts/rvm
 
