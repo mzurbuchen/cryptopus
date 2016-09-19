@@ -290,7 +290,7 @@ fi
 %{_sysconfdir}/cron.d/%{name}
 %endif
 
-%attr(-,root,%{name}) %{wwwdir}/%{name}
+%attr(-,root,%{name}) %{wwwdir}/%{name}/*
 # run application as dedicated user
 %attr(-,%{name},%{name}) %{wwwdir}/%{name}/www/config.ru
 # allow write access to special directories
