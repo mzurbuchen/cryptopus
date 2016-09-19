@@ -69,6 +69,7 @@ BuildRequires:	postgresql-devel
 %endif
 %if %{use_imagemagick}
 BuildRequires: ImageMagick-devel
+BuildRequires: rubygems
 Requires: ImageMagick
 %endif
 %if %{use_sphinx}
@@ -98,25 +99,17 @@ getent passwd %{name} > /dev/null || \
   -c "Rails Application %{name}" %{name}
 exit 0
 
-%if %{use_rvm}
-gem install rvm
-gem install bundler
-gem install passenger
-rvm use 2.2
-%endif
+#%if %{use_rvm}
+#gem install rvm
+#rvm use 2.2
+#gem install bundler
+#gem install passenger
+#%endif
 
 %prep
 # prepare the source to install it during the package building
 # process.
 %setup -q -n %{name}-%{version}
-
-# Install build requirements not covered by BuildRequires
-%if %{use_rvm}
-gem install rvm
-gem install bundler
-#gem install passenger
-rvm use 2.2
-%endif
 
 %build
 # build/compile any code
@@ -127,6 +120,19 @@ rvm use 2.2
 # Install the application code into the build root directory. This directory
 # structure will be packaged into the package.
 rm -rf $RPM_BUILD_ROOT
+
+gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+curl -O https://raw.githubusercontent.com/wayneeseguin/rvm/master/binscripts/rvm-installer
+curl -O https://raw.githubusercontent.com/wayneeseguin/rvm/master/binscripts/rvm-installer.asc
+gpg --verify rvm-installer.asc && bash rvm-installer stable --path $RPM_BUILD_ROOT/.rvm
+
+mv /root/.profile $RPM_BUILD_ROOT/%{wwwdir}/%{name} 
+
+. $RPM_BUILD_ROOT/.rvm/scripts/rvm
+
+rvm use 2.2
+gem install bundler
+gem install passenger
 
 #### set env vars for database.yml
 %if "%{?RAILS_DB_NAME}" != ""
