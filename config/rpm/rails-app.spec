@@ -64,12 +64,12 @@ BuildRequires:  libxslt-devel
 BuildRequires:  sqlite-devel
 BuildRequires:	mysql-devel
 BuildRequires:  augeas-devel
+BuildRequires:  gnupg2
 %if %{use_pgsql}
 BuildRequires:	postgresql-devel
 %endif
 %if %{use_imagemagick}
 BuildRequires: ImageMagick-devel
-BuildRequires: gnupg2
 Requires: ImageMagick
 %endif
 %if %{use_sphinx}
