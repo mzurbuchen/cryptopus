@@ -1,3 +1,6 @@
+# Change build shell from /bin/sh to /bin/bash to make rvm happy
+%define _buildshell /bin/bash
+
 ### application settings
 # add your specific settings here
 
