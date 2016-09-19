@@ -124,10 +124,15 @@ exit 0
 # structure will be packaged into the package.
 rm -rf $RPM_BUILD_ROOT
 
+%if %{use_rvm}
+# Workaround to get correct (r)paths in shared objects, binaries and config files
+mkdir -p $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.rvm
+ln -s $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.rvm %{wwwdir}/%{name}/.rvm
+
 gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
 curl -O https://raw.githubusercontent.com/wayneeseguin/rvm/master/binscripts/rvm-installer
 curl -O https://raw.githubusercontent.com/wayneeseguin/rvm/master/binscripts/rvm-installer.asc
-gpg --verify rvm-installer.asc && bash rvm-installer stable --user-install --path $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.rvm
+gpg --verify rvm-installer.asc && bash rvm-installer stable --user-install --path %{wwwdir}/%{name}/.rvm
 
 install -Dp -m0755 $HOME/.profile $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.profile
 
@@ -135,10 +140,10 @@ set +x
 
 . $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.rvm/scripts/rvm
 
-rvm install 2.2 --movable
-rvm use 2.2
+rvm use --install 2.2
 gem install bundler
 gem install passenger
+%endif
 
 #### set env vars for database.yml
 %if "%{?RAILS_DB_NAME}" != ""
