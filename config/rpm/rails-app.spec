@@ -69,7 +69,7 @@ BuildRequires:	postgresql-devel
 %endif
 %if %{use_imagemagick}
 BuildRequires: ImageMagick-devel
-BuildRequires: rubygems
+BuildRequires: gnupg2
 Requires: ImageMagick
 %endif
 %if %{use_sphinx}
@@ -81,7 +81,6 @@ Requires: memcached
 %if %{use_rvm}
 Requires: rvm
 %endif
-Requires: rubygems
 Requires:	logrotate
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-%(id -un)
 
