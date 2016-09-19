@@ -110,6 +110,14 @@ rvm use 2.2
 # process.
 %setup -q -n %{name}-%{version}
 
+# Install build requirements not covered by BuildRequires
+if %{use_rvm}
+gem install rvm
+gem install bundler
+#gem install passenger
+rvm use 2.2
+%endif
+
 %build
 # build/compile any code
 # this can be left empty as for most rails applications we won't build
