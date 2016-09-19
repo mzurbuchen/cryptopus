@@ -41,11 +41,12 @@
 %define wwwdir      /var/www/vhosts
 %if "%{?USE_RUBY}" == "rvm"
 %define use_rvm 1
+%define bundle_cmd RAILS_ENV=production bundle
 %else
 %define use_rvm 0
 %define ruby_bindir /opt/ruby-"%{?RUBY_VERSION}"/bin
-%endif
 %define bundle_cmd  RAILS_ENV=production %{ruby_bindir}/bundle
+%endif
 
 ##### start of the specfile
 Name:		%{app_name}
