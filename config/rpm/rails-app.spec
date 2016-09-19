@@ -118,7 +118,7 @@ exit 0
 # this can be left empty as for most rails applications we won't build
 # any code.
 
-%install -p /bin/bash
+%install
 # Install the application code into the build root directory. This directory
 # structure will be packaged into the package.
 rm -rf $RPM_BUILD_ROOT
