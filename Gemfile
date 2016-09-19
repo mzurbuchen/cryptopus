@@ -22,14 +22,15 @@ gem 'sass-rails'
 gem 'turbolinks'
 gem 'twitter-bootstrap-rails'
 gem 'uglifier'
+
 gem 'therubyracer'
+gem 'rubocop'
+gem 'rubocop-checkstyle_formatter'
 
 group :development, :test do
   gem 'minitest'
   gem 'rails-erd'
   gem 'test-unit'
-  gem 'rubocop'
-  gem 'rubocop-checkstyle_formatter'
   gem 'faker'
 end
 
