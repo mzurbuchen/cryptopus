@@ -127,7 +127,7 @@ gpg --verify rvm-installer.asc && bash rvm-installer stable --user-install --pat
 
 install -Dp -m0755 $HOME/.profile $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.profile
 
-. $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.profile
+. $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.rvm/scripts/rvm
 
 rvm use 2.2
 gem install bundler
