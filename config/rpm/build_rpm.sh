@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+env
+
 if [ -z $BUILD_NUMBER ]; then
   echo "Usage: BUILD_NUMBER=123 build_rpm.sh"
   exit 1
