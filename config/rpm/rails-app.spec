@@ -67,7 +67,6 @@ BuildRequires:  libxslt-devel
 BuildRequires:  sqlite-devel
 BuildRequires:	mysql-devel
 BuildRequires:  augeas-devel
-BuildRequires:  gnupg2
 %if %{use_pgsql}
 BuildRequires:	postgresql-devel
 %endif
@@ -82,7 +81,8 @@ Requires: sphinx
 Requires: memcached
 %endif
 %if %{use_rvm}
-Requires: rvm
+BuildRequires:  gnupg2
+BuildRequires:  yum
 %endif
 Requires:	logrotate
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-%(id -un)
