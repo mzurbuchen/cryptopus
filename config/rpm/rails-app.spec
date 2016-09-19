@@ -111,7 +111,7 @@ rvm use 2.2
 %setup -q -n %{name}-%{version}
 
 # Install build requirements not covered by BuildRequires
-if %{use_rvm}
+%if %{use_rvm}
 gem install rvm
 gem install bundler
 #gem install passenger
