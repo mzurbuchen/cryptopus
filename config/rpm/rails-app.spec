@@ -126,13 +126,13 @@ rm -rf $RPM_BUILD_ROOT
 
 %if %{use_rvm}
 # Workaround to get correct (r)paths in shared objects, binaries and config files
-mkdir -p $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.rvm
-ln -s $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.rvm %{wwwdir}/%{name}/.rvm
+mkdir -p $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.rvm /%{wwwdir}/%{name}
+ln -s $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.rvm /%{wwwdir}/%{name}/.rvm
 
 gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
 curl -O https://raw.githubusercontent.com/wayneeseguin/rvm/master/binscripts/rvm-installer
 curl -O https://raw.githubusercontent.com/wayneeseguin/rvm/master/binscripts/rvm-installer.asc
-gpg --verify rvm-installer.asc && bash rvm-installer stable --user-install --path %{wwwdir}/%{name}/.rvm
+gpg --verify rvm-installer.asc && bash rvm-installer stable --user-install --path /%{wwwdir}/%{name}/.rvm
 
 install -Dp -m0755 $HOME/.profile $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.profile
 
