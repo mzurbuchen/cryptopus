@@ -120,14 +120,12 @@ exit 0
 # structure will be packaged into the package.
 rm -rf $RPM_BUILD_ROOT
 
-mkdir -p $RPM_BUILD_ROOT
-
 gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
 curl -O https://raw.githubusercontent.com/wayneeseguin/rvm/master/binscripts/rvm-installer
 curl -O https://raw.githubusercontent.com/wayneeseguin/rvm/master/binscripts/rvm-installer.asc
 gpg --verify rvm-installer.asc && bash rvm-installer stable --user-install --path $RPM_BUILD_ROOT/.rvm
 
-mv $HOME/.profile $RPM_BUILD_ROOT/%{wwwdir}/%{name} 
+install -Dp -m0644 $HOME/.profile $RPM_BUILD_ROOT/%{wwwdir}/%{name} 
 
 . $RPM_BUILD_ROOT/.rvm/scripts/rvm
 
