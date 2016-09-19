@@ -174,7 +174,7 @@ echo "# Reindex sphinx for %{name}
 " > $RPM_BUILD_ROOT/%{_sysconfdir}/cron.d/%{name}
 %endif
 
-%if %{use_rvm} == ""
+%if "%{?USE_RUBY}" == ""
 export PATH=%{ruby_bindir}:$PATH
 %endif
 
