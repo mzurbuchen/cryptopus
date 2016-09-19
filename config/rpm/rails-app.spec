@@ -135,7 +135,7 @@ set +x
 
 . $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.rvm/scripts/rvm
 
-rvm use --install 2.2
+rvm use --prefix=%{wwwdir}/%{name}/.rvm --install 2.2
 gem install bundler
 gem install passenger
 
