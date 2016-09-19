@@ -39,7 +39,7 @@
 
 %define build_number BUILD_NUMBER
 %define wwwdir      /var/www/vhosts
-%if "%{?USE_RUBY}" == "rvm"
+%if "%{?RAILS_USE_RUBY}" == "rvm"
 %define use_rvm 1
 %define bundle_cmd RAILS_ENV=production bundle
 %else
@@ -92,7 +92,6 @@ This is a rails application
 # Run before the package is installed.
 # Creates the user and group which will be used to run the
 # application.
-puts "%{?USE_RUBY}"
 getent group %{name} > /dev/null || groupadd -r %{name}
 getent passwd %{name} > /dev/null || \
   useradd -r -g %{name} -d %{wwwdir}/%{name} -s /sbin/nologin \
@@ -176,7 +175,7 @@ echo "# Reindex sphinx for %{name}
 " > $RPM_BUILD_ROOT/%{_sysconfdir}/cron.d/%{name}
 %endif
 
-%if "%{?USE_RUBY}" == ""
+%if "%{?RAILS_USE_RUBY}" == ""
 export PATH=%{ruby_bindir}:$PATH
 %endif
 
