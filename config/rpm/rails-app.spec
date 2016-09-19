@@ -126,8 +126,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %if %{use_rvm}
 # Workaround to get correct (r)paths in shared objects, binaries and config files
-mkdir -p ${RPM_BUILD_ROOT}%{wwwdir}/%{name} %{wwwdir}
-ln -s ${RPM_BUILD_ROOT}%{wwwdir}/%{name} %{wwwdir}
+mkdir -p ${RPM_BUILD_ROOT}%{wwwdir} %{wwwdir}/%{name}
+ln -s %{wwwdir}/%{name} ${RPM_BUILD_ROOT}%{wwwdir}
 
 gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
 curl -O https://raw.githubusercontent.com/wayneeseguin/rvm/master/binscripts/rvm-installer
