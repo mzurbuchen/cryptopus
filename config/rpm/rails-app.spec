@@ -92,6 +92,7 @@ This is a rails application
 # Run before the package is installed.
 # Creates the user and group which will be used to run the
 # application.
+puts "%{?USE_RUBY}"
 getent group %{name} > /dev/null || groupadd -r %{name}
 getent passwd %{name} > /dev/null || \
   useradd -r -g %{name} -d %{wwwdir}/%{name} -s /sbin/nologin \
