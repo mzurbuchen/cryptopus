@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 if [ -z $BUILD_NUMBER ]; then
   echo "Usage: BUILD_NUMBER=123 build_rpm.sh"
@@ -51,7 +51,7 @@ function notifyFailure {
 trap notifyFailure EXIT
 
 for plat in $BUILD_PLATFORMS; do
-  eval "/usr/bin/mock -r $plat --rebuild $build_flags $SRPM"
+  eval "/usr/bin/mock -r $plat --no-clean --no-cleanup-after --rebuild $build_flags $SRPM"
 done
 
 # uncomment this line if you want to push build tags to the git server

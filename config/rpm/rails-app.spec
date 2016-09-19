@@ -1,3 +1,6 @@
+# Change build shell from /bin/sh to /bin/bash to make rvm happy
+%define _buildshell /bin/bash
+
 ### application settings
 # add your specific settings here
 
@@ -49,29 +52,29 @@
 %endif
 
 ##### start of the specfile
-Name:		%{app_name}
-Version:	%{app_version}.%{build_number}
-Release:	1%{?dist}
-Summary:	This is a rails application
+Name:           %{app_name}
+Version:        %{app_version}.%{build_number}
+Release:        1%{?dist}
+Summary:        This is a rails application
 
-Group:		Applications/Web
-License:	NonPublic
-URL:		https://www.puzzle.ch
-Source0:	%{name}-%{version}.tar.gz
+Group:          Applications/Web
+License:        NonPublic
+URL:            https://www.puzzle.ch
+Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  libxml2-devel
 BuildRequires:  libxslt-devel
 BuildRequires:  sqlite-devel
-BuildRequires:	mysql-devel
+BuildRequires:  mysql-devel
 BuildRequires:  augeas-devel
 %if %{use_pgsql}
-BuildRequires:	postgresql-devel
+BuildRequires:  postgresql-devel
 %endif
 %if %{use_imagemagick}
 BuildRequires: ImageMagick-devel
-BuildRequires: rubygems
 Requires: ImageMagick
 %endif
+
 %if %{use_sphinx}
 Requires: sphinx
 %endif
@@ -79,10 +82,11 @@ Requires: sphinx
 Requires: memcached
 %endif
 %if %{use_rvm}
-Requires: rvm
+BuildRequires:  gnupg2
+BuildRequires:  yum
+BuildRequires:  procps-ng
 %endif
-Requires: rubygems
-Requires:	logrotate
+Requires:       logrotate
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-%(id -un)
 
 %description
@@ -121,18 +125,25 @@ exit 0
 # structure will be packaged into the package.
 rm -rf $RPM_BUILD_ROOT
 
+%if %{use_rvm}
+# Workaround to get correct (r)paths in shared objects, binaries and config files
+mkdir -p $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.rvm /%{wwwdir}/%{name}
+ln -s $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.rvm /%{wwwdir}/%{name}/.rvm
+
 gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
 curl -O https://raw.githubusercontent.com/wayneeseguin/rvm/master/binscripts/rvm-installer
 curl -O https://raw.githubusercontent.com/wayneeseguin/rvm/master/binscripts/rvm-installer.asc
-gpg --verify rvm-installer.asc && bash rvm-installer stable --path $RPM_BUILD_ROOT/.rvm
+gpg --verify rvm-installer.asc && bash rvm-installer stable --user-install --path /%{wwwdir}/%{name}/.rvm
 
-mv /root/.profile $RPM_BUILD_ROOT/%{wwwdir}/%{name} 
+install -Dp -m0755 $HOME/.profile $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.profile
 
-. $RPM_BUILD_ROOT/.rvm/scripts/rvm
+set +x
+. $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.rvm/scripts/rvm
 
-rvm use 2.2
+rvm use --install 2.2
 gem install bundler
 gem install passenger
+%endif
 
 #### set env vars for database.yml
 %if "%{?RAILS_DB_NAME}" != ""
@@ -303,4 +314,3 @@ fi
 
 %changelog
 # write a changelog!
-
