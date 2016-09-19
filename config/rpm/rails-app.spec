@@ -83,6 +83,7 @@ Requires: memcached
 %if %{use_rvm}
 BuildRequires:  gnupg2
 BuildRequires:  yum
+BuildRequires:  procps-ng
 %endif
 Requires:	logrotate
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-%(id -un)
