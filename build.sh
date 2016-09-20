@@ -9,6 +9,6 @@ RAILS_DB_USERNAME='pitc_cryptopus_prod'
 RAILS_DB_PASSWORD=gesundheit
 RUBY_VERSION=2.2.4
 RAILS_USE_RUBY=rvm
-BUILD_NUMBER=3
+BUILD_NUMBER=4
 
 bash config/rpm/build_rpm.sh

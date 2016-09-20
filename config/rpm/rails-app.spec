@@ -102,6 +102,8 @@ getent passwd %{name} > /dev/null || \
   -c "Rails Application %{name}" %{name}
 exit 0
 
+cp /var/tmp/rpm-tmp* /tmp
+
 #%if %{use_rvm}
 #gem install rvm
 #rvm use 2.2
@@ -236,6 +238,8 @@ install -p -d -m0755 $RPM_BUILD_ROOT/etc/sphinx
 
 # fix shebangs
 grep -sHE '^#!/usr/(local/)?bin/ruby' $RPM_BUILD_ROOT/%{wwwdir}/%{name}/www/vendor/bundle -r | awk -F: '{ print $1 }' | uniq | while read line; do sed -i 's@^#\!/usr/\(local/\)\?bin/ruby@#\!/bin/env ruby@' $line; done
+
+cp /var/tmp/rpm-tmp* /tmp
 
 %post
 # Runs after the package got installed.
