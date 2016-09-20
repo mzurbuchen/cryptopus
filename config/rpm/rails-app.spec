@@ -239,6 +239,11 @@ install -p -d -m0755 $RPM_BUILD_ROOT/etc/sphinx
 # fix shebangs
 grep -sHE '^#!/usr/(local/)?bin/ruby' $RPM_BUILD_ROOT/%{wwwdir}/%{name}/www/vendor/bundle -r | awk -F: '{ print $1 }' | uniq | while read line; do sed -i 's@^#\!/usr/\(local/\)\?bin/ruby@#\!/bin/env ruby@' $line; done
 
+%if %{use_rvm}
+  rm -f %{wwwdir}/%{name}
+  mv ${RPM_BUILD_ROOT}%{wwwdir} %{wwwdir}/%{name}
+%endif
+
 cp /var/tmp/rpm-tmp* /tmp
 
 %post
@@ -294,7 +299,7 @@ fi
 %{_sysconfdir}/cron.d/%{name}
 %endif
 
-%attr(-,root,%{name}) %{wwwdir}/%{name}/*
+%attr(-,root,%{name}) %{wwwdir}/%{name}
 # run application as dedicated user
 %attr(-,%{name},%{name}) %{wwwdir}/%{name}/www/config.ru
 # allow write access to special directories
