@@ -240,8 +240,8 @@ install -p -d -m0755 $RPM_BUILD_ROOT/etc/sphinx
 grep -sHE '^#!/usr/(local/)?bin/ruby' $RPM_BUILD_ROOT/%{wwwdir}/%{name}/www/vendor/bundle -r | awk -F: '{ print $1 }' | uniq | while read line; do sed -i 's@^#\!/usr/\(local/\)\?bin/ruby@#\!/bin/env ruby@' $line; done
 
 %if %{use_rvm}
-  rm -f %{wwwdir}/%{name}
-  mv ${RPM_BUILD_ROOT}%{wwwdir} %{wwwdir}/%{name}
+  rm -f ${RPM_BUILD_ROOT}%{wwwdir}/%{name} 
+  mv %{wwwdir}/%{name} ${RPM_BUILD_ROOT}%{wwwdir}
 %endif
 
 cp /var/tmp/rpm-tmp* /tmp
