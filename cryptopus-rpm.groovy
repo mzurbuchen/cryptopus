@@ -8,8 +8,8 @@ node('buildnode') {
   git('https://github.com/puzzle/cryptopus')
   sh """
     ${fpmHome}/bin/fpm -s dir -t rpm -n cryptopus -a x86_64 --iteration ${env.BUILD_NUMBER} -m puzzle-itc --prefix ${deploy_path} .
-    rm -rf ./*.rpm
     /usr/local/bin/upload_rpm_to_pulp.sh ${pulp_repo} ${current_build}
+    rm -rf ./*.rpm
   """
   archive"${current_build}"
 }
