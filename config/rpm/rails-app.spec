@@ -136,11 +136,11 @@ curl -O https://raw.githubusercontent.com/wayneeseguin/rvm/master/binscripts/rvm
 curl -O https://raw.githubusercontent.com/wayneeseguin/rvm/master/binscripts/rvm-installer.asc
 gpg --verify rvm-installer.asc && bash rvm-installer stable --user-install --path %{wwwdir}/%{name}/.rvm
 
-install -Dp -m0755 $HOME/.profile $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.profile
+install -Dp -m0755 $HOME/.profile %{wwwdir}/%{name}/.profile
 
 set +x
 
-. $RPM_BUILD_ROOT/%{wwwdir}/%{name}/.rvm/scripts/rvm
+. %{wwwdir}/%{name}/.rvm/scripts/rvm
 
 rvm use --install 2.2
 gem install bundler
@@ -209,11 +209,17 @@ export PATH=%{ruby_bindir}:$PATH
 ([ ! -f ~/.gemrc ] || grep -q no-ri ~/.gemrc) || echo "gem: --no-ri --no-rdoc" >> ~/.gemrc
 %{bundle_cmd} install --deployment --without %{bundle_without_groups}
 %{bundle_cmd} exec rake assets:precompile
+cp /var/tmp/rpm-tmp* /tmp
 
 # cleanup log and tmp and db we don't want them in
 # the rpm
 rm -rf log tmp
 chmod -R o-rwx .
+
+%if %{use_rvm}
+  rm -f ${RPM_BUILD_ROOT}%{wwwdir}/%{name} 
+  mv %{wwwdir}/%{name} ${RPM_BUILD_ROOT}%{wwwdir}
+%endif
 
 install -p -d -m0750 $RPM_BUILD_ROOT/%{wwwdir}/%{name}/www
 install -p -d -m0770 $RPM_BUILD_ROOT/%{wwwdir}/%{name}/www/log
@@ -238,13 +244,6 @@ install -p -d -m0755 $RPM_BUILD_ROOT/etc/sphinx
 
 # fix shebangs
 grep -sHE '^#!/usr/(local/)?bin/ruby' $RPM_BUILD_ROOT/%{wwwdir}/%{name}/www/vendor/bundle -r | awk -F: '{ print $1 }' | uniq | while read line; do sed -i 's@^#\!/usr/\(local/\)\?bin/ruby@#\!/bin/env ruby@' $line; done
-
-%if %{use_rvm}
-  rm -f ${RPM_BUILD_ROOT}%{wwwdir}/%{name} 
-  mv %{wwwdir}/%{name} ${RPM_BUILD_ROOT}%{wwwdir}
-%endif
-
-cp /var/tmp/rpm-tmp* /tmp
 
 %post
 # Runs after the package got installed.
