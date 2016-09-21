@@ -2,7 +2,7 @@ node('buildnode') {
   def fpmHome   = tool('fpm')
   def fpm       = "${fpmHome}/bin/fpm"
   def pulp_repo = 'puzzle-autobuild-cryptopus2'
-  def deploy_path   = "/var/www/vhosts"
+  def deploy_path   = "/var/www/vhosts/cryptopus/www"
 
   git('https://github.com/puzzle/cryptopus')
   sh """
