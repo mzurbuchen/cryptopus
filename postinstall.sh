@@ -1,4 +1,4 @@
 #!/bin/bash
 su - cryptopus
-gem install bundler
+cd /var/www/vhosts/cryptopus/www
 bundle install --deployment --without 'development test'
