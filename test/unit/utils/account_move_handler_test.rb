@@ -18,7 +18,7 @@ class AccountMoveHandlerTest < ActiveSupport::TestCase
     
     account_handler = AccountMoveHandler.new(account, private_key, bob)
     
-    assert_equal nil, account_handler.move(new_group)
+    assert_nil account_handler.move(new_group)
   end
 
   test 'Move account to a group from another team' do

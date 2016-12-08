@@ -21,8 +21,8 @@ class Api::SearchControllerTest < ActionController::TestCase
 
     assert_equal account.accountname, result_json['accountname']
     assert_equal account.id, result_json['id']
-    assert_equal nil, result_json['cleartext_username']
-    assert_equal nil, result_json['cleartext_password']
+    assert_nil result_json['cleartext_username']
+    assert_nil result_json['cleartext_password']
 
     assert_equal group.name, result_json['group']
     assert_equal group.id, result_json['group_id']
@@ -43,8 +43,8 @@ class Api::SearchControllerTest < ActionController::TestCase
 
     assert_equal account.accountname, result_json['accountname']
     assert_equal account.id, result_json['id']
-    assert_equal nil, result_json['cleartext_username']
-    assert_equal nil, result_json['cleartext_password']
+    assert_nil result_json['cleartext_username']
+    assert_nil result_json['cleartext_password']
 
     assert_equal group.name, result_json['group']
     assert_equal group.id, result_json['group_id']
