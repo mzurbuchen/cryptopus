@@ -13,23 +13,22 @@ gem 'breadcrumbs_on_rails'
 gem 'clipboard'
 gem 'compass-rails'
 gem 'dynamic_form'
-gem 'haml'
 gem 'rails-i18n'
-gem 'sass-rails'
 gem 'turbolinks'
 gem 'uglifier'
 gem 'seed-fu'
 
 
-group :assets do
-  gem 'handlebars_assets'
-  gem 'twitter-bootstrap-rails'
-  gem 'coffee-rails'
-  gem 'therubyracer'
-  gem 'jquery-rails'
-  gem 'jquery-ui-rails'
-  gem 'less-rails'
-end
+gem 'handlebars_assets', '0.23.1'
+gem 'twitter-bootstrap-rails', '3.2.2'
+gem 'coffee-rails', '4.1.1'
+gem 'therubyracer', '0.12.2'
+gem 'jquery-rails', '4.0.5'
+gem 'jquery-ui-rails', '5.0.5'
+gem 'less-rails', '2.7.0'
+gem 'sass-rails', '5.0.1'
+gem 'haml', '4.0.7'
+gem 'sprockets', '2.12.4'
 
 group :development, :test do
   gem 'launchy'
