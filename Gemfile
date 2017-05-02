@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '4.2.7.1'
+gem 'rails', '4.2.8'
 
 gem 'mysql2'
 gem 'sqlite3'
@@ -14,18 +14,22 @@ gem 'clipboard'
 gem 'compass-rails'
 gem 'dynamic_form'
 gem 'haml'
-gem 'handlebars_assets'
-gem 'jquery-rails'
-gem 'jquery-ui-rails'
-gem 'less-rails'
 gem 'rails-i18n'
 gem 'sass-rails'
 gem 'turbolinks'
-gem 'twitter-bootstrap-rails'
 gem 'uglifier'
-gem 'therubyracer'
 gem 'seed-fu'
-gem 'faker'
+
+
+group :assets do
+  gem 'handlebars_assets'
+  gem 'twitter-bootstrap-rails'
+  gem 'coffee-rails'
+  gem 'therubyracer'
+  gem 'jquery-rails'
+  gem 'jquery-ui-rails'
+  gem 'less-rails'
+end
 
 group :development, :test do
   gem 'launchy'
@@ -40,6 +44,7 @@ group :development, :test do
 end
 
 group :development do
+  gem 'faker'
   gem 'brakeman', require: false
   gem 'hirb'
   gem 'pry'
