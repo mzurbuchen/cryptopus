@@ -31,6 +31,17 @@ class app.Login
     localStorage.setItem 'username', $('#username').val()
     return
 
+  showPasswordStrength = ->
+    options =
+      onLoad: ->
+        $('#messages').text 'Start typing password'
+        return
+      onKeyUp: (evt) ->
+        $(evt.target).pwstrength 'outputErrorList'
+        return
+    $(':password').pwstrength options
+    return
+
   bind = ->
     $(document).on 'page:change', ->
       setFocus()
@@ -43,5 +54,7 @@ class app.Login
 
     $(document).on 'click', '#username', ->
       selectUsername()
+
+    $(document).on 'page:load', showPasswordStrength
 
   new Login
