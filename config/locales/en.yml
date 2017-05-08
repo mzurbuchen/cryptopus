@@ -61,6 +61,7 @@ en:
     show:
       title: "Account: %{account_name}"
       last_change: "Last change was %{time_ago} ago"
+      password_strength: "Password strength:"
       attachments: "Attachments"
       file: "File"
       show_password: "Show password"

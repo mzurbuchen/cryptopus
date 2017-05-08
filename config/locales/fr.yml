@@ -46,7 +46,7 @@ fr:
       type_to_search: "Appuyez pour rechercher..."
 
   accounts:
-    title: "Comptes" 
+    title: "Comptes"
     index:
       move: "Déplacer compte à un autre groupe"
       title: "Comptes du groupe %{group_name} de l'équipe %{team_name}"
@@ -61,6 +61,7 @@ fr:
     show:
       title: "Compte: %{account_name}"
       last_change: "Dernière mise à jour il ya %{time_ago}"
+      password_strength: "Force de mot de passe:"
       attachments: "Attachements"
       file: "Fichier"
       show_password: "Afficher le mot de passe"
@@ -250,6 +251,7 @@ fr:
       recrypted: "Vous avez réussi re crypté le mot de passe."
       wait: "S'il vous plaît attendez que Racine a recrypted vos mots de passe de l'équipe."
       wrong_password: "Votre mot de passe était incorrect"
+      weak_password: "Pour améliorer la sécurité vous devez déterminer un mot de passe utilisateur plus complexe"
     teams:
       wrong_user_password: "Saisissez un nom d'utilisateur et mot de passe ou vérifier les paramètres LDAP."
       created: "Créé avec succès une nouvelle équipe."
