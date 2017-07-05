@@ -6,20 +6,15 @@
 #  https://github.com/puzzle/cryptopus.
 
 require 'test_helper'
+class LdapToolsTest <  ActiveSupport::TestCase
 
+  test 'authenticates with valid user password' do
+    username = 'bob'
+    password = 'ldappw'
 
-describe LdapTools do
+    Net::LDAP.any_instance.expects(:bind_as)...
 
-  describe "validation" do
-    it "cannot login with invalid username" do
-      assert_raises ActiveRecord::StatementInvalid do
-        LdapTools.check_username("$invalid_username?")
-      end
-    end
-
-    it "can login with valid username" do
-      LdapTools.check_username("validUsername")
-    end
+    assert_equal true, LdapTools.login(username, password)
   end
 
 end

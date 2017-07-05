@@ -10,37 +10,29 @@ require 'net/ldap'
 class LdapTools
 
   class << self
-    # rubocop:disable MethodLength
-    def ldap_login(username, password)
+    def login(username, password)
       return unless Setting.value(:ldap, :enable)
       check_username(username)
 
-      # TODO
-      ldap = Net::LDAP.new \
-        host: Setting.value(:ldap, :hostname),
-        port: Setting.value(:ldap, :portnumber),
-        encryption: :simple_tls
+      ldap = Net::LDAP.new(host: Setting.value(:ldap, :hostname),
+                           port: Setting.value(:ldap, :portnumber),
+                           encryption: :simple_tls)
 
-      result = ldap.bind_as \
-        base: Setting.value(:ldap, :basename),
-        filter: "uid=#{username}",
-        password: password
+      result = ldap.bind_as(base: Setting.value(:ldap, :basename),
+                            filter: "uid=#{username}",
+                            password: password)
 
       if result
         user_dn = result.first.dn
-        ldap = Net::LDAP.new \
-          host: Setting.value(:ldap, :hostname),
-          port: Setting.value(:ldap, :portnumber),
-          encryption: :simple_tls,
-          auth: { method: :simple,
-                  username: user_dn,
-                  password: password }
-
-        if ldap.bind
-          return true
-        end
+        ldap = Net::LDAP.new(host: Setting.value(:ldap, :hostname),
+                             port: Setting.value(:ldap, :portnumber),
+                             encryption: :simple_tls,
+                             auth: { method: :simple,
+                                     username: user_dn,
+                                     password: password })
       end
-      false
+
+      ldap.bind ? true : false
     end
 
     def get_uid_by_username(username)
@@ -90,5 +82,6 @@ class LdapTools
         raise ActiveRecord::StatementInvalid, 'invalid username'
       end
     end
+
   end
 end
