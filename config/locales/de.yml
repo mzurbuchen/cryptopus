@@ -8,6 +8,7 @@
 de:
   fallback: "ACHTUNG! Dass ist die Cryptopus Fallback Umgebung. Schreiben sie keine neuen Daten da diese nicht erhalten bleiben!"
   confirmation: "Sind Sie sicher?"
+  test: "Test"
   show: "Anzeigen"
   edit: "Editieren"
   update: "Updaten"
