@@ -5,7 +5,7 @@
 #  See the COPYING file at the top-level directory or at
 #  https://github.com/puzzle/cryptopus.
 
-require 'ldap_tools'
+require 'ldap_connection'
 
 class AccountsController < ApplicationController
   before_action :group

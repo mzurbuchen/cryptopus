@@ -70,9 +70,9 @@ class UserTest < ActiveSupport::TestCase
 
   test 'create user from ldap' do
     username = 'bob'
-    LdapTools.expects(:get_uid_by_username).returns(42)
-    LdapTools.expects(:get_ldap_info).with('42', 'givenname').returns("bob")
-    LdapTools.expects(:get_ldap_info).with('42', 'sn').returns("test")
+    LdapConnection.new.expects(:uid_by_username).returns(42)
+    LdapConnection.new.expects(:ldap_info).with('42', 'givenname').returns("bob")
+    LdapConnection.new.expects(:ldap_info).with('42', 'sn').returns("test")
 
     user = User.send(:create_from_ldap, username, 'password')
 
@@ -92,7 +92,7 @@ class UserTest < ActiveSupport::TestCase
   test 'does not return user if user not exists in db and ldap' do
     enable_ldap_auth
 
-    LdapTools.expects(:ldap_login).with('nobody', 'password').returns(false)
+    LdapConnection.new.expects(:login).with('nobody', 'password').returns(false)
     User.expects(:create_from_ldap).never
 
     user = User.find_or_import_from_ldap('nobody', 'password')
@@ -101,7 +101,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test 'does not return user if user not exists in db and ldap disabled' do
-    LdapTools.expects(:ldap_login).never
+    LdapConnection.new.expects(:login).never
 
     user = User.find_or_import_from_ldap('nobody', 'password')
     assert_nil user
@@ -109,7 +109,7 @@ class UserTest < ActiveSupport::TestCase
 
   test 'imports and creates user from ldap' do
     enable_ldap_auth
-    LdapTools.expects(:ldap_login).with('nobody', 'password').returns(true)
+    LdapConnection.new.expects(:login).with('nobody', 'password').returns(true)
     User.expects(:create_from_ldap).once
 
     user = User.find_or_import_from_ldap('nobody', 'password')
@@ -174,7 +174,7 @@ class UserTest < ActiveSupport::TestCase
     user = users(:bob)
     user.update_attribute(:auth, 'ldap')
 
-    LdapTools.stubs(:ldap_login).returns(true)
+    LdapConnection.new.stubs(:login).returns(true)
 
     assert_not user.recrypt_private_key!('new_password', 'wrong_old_password')
 

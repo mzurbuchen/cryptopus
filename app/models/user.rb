@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 # == Schema Information
 #
 # Table name: users
@@ -85,14 +86,14 @@ class User < ActiveRecord::Base
     private
 
     def authenticate_ldap(username, cleartext_password)
-      LdapTools.ldap_login(username, cleartext_password)
+      LdapConnection.new.login(username, cleartext_password)
     end
 
     def create_from_ldap(username, password)
       user = new
       user.username = username
       user.auth = 'ldap'
-      user.uid = LdapTools.get_uid_by_username(username)
+      user.uid = LdapConnection.uid_by_username(username)
       user.create_keypair password
       user.update_info
       user
@@ -255,8 +256,8 @@ class User < ActiveRecord::Base
 
   # Updates Information about the user from LDAP
   def update_info_from_ldap
-    self.givenname = LdapTools.get_ldap_info(uid.to_s, 'givenname')
-    self.surname   = LdapTools.get_ldap_info(uid.to_s, 'sn')
+    self.givenname = LdapConnection.ldap_info(uid.to_s, 'givenname')
+    self.surname   = LdapConnection.ldap_info(uid.to_s, 'sn')
   end
 
   def protect_if_last_teammember

@@ -17,120 +17,121 @@ class LdapConnectionTest <  ActiveSupport::TestCase
     end
   end
 
-  #test 'authenticates with valid user password' do
-    #username = 'bob'
-    #password = 'bobstar42'
-    #userdn = 'bobs_dn'
+  test 'authenticates with valid user password' do
+  entry = mock()
+  entry.expects(:dn)
+             .returns('uid=bob,ou=puzzle,ou=users,dc=puzzle,dc=itc')
 
-    #ldap_entry = mock()
-    #ldap_entry.expects(:dn).returns(userdn)
-    #ldap = mock()
-    #ldap.expects(:bind_as)
-        #.with(base: ldap_config[:basename], filter: "uid=#{username}", password: password)
-        #.returns([ ldap_entry ])
-    #Net::LDAP.expects(:new)
-             #.with(host: ldap_config[:hostname], port: ldap_config[:port], encryption: :simple_tls)
-             #.returns(ldap)
-    #ldap = mock()
-    #ldap.expects(:bind).returns(true)
-    #Net::LDAP.expects(:new)
-             #.with(host: ldap_config[:hostname],
-                   #port: ldap_config[:port],
-                   #encryption: :simple_tls,
-                   #auth: { method: :simple,
-                           #username: userdn,
-                           #password: password })
-              #.returns(ldap)
+    Net::LDAP.any_instance.expects(:bind_as)
+             .with({base: 'example_basename', filter: "uid=#{'bob'}", password: 'pw'})
+             .returns([entry])
 
-    #assert_equal true, ldap_connect.login(username, password)
-  #end
+    Net::LDAP.any_instance.expects(:bind)
+             .returns(true)
 
-  #test 'does not authenticate with valid user but invalid password' do
-    #username = 'bob'
-    #password = 'bobstar666'
-    #userdn = 'bobs_dn'
+    assert_equal true, ldap_connection.login('bob', 'pw')
+  end
 
-    #ldap_entry = mock()
-    #ldap_entry.expects(:dn).returns(userdn)
-    #ldap = mock()
-    #ldap.expects(:bind_as)
-        #.with(base: ldap_config[:basename], filter: "uid=#{username}", password: password)
-        #.returns([ ldap_entry ])
-    #Net::LDAP.expects(:new)
-             #.with(host: ldap_config[:hostname], port: ldap_config[:port], encryption: :simple_tls)
-             #.returns(ldap)
-    #ldap = mock()
-    #ldap.expects(:bind).returns(false)
-    #Net::LDAP.expects(:new)
-             #.with(host: ldap_config[:hostname],
-                   #port: ldap_config[:port],
-                   #encryption: :simple_tls,
-                   #auth: { method: :simple,
-                           #username: userdn,
-                           #password: password })
-              #.returns(ldap)
+  test 'does not authenticate with valid user but invalid password' do
+    Net::LDAP.any_instance.expects(:bind_as)
+             .with({base: 'example_basename', filter: "uid=#{'bob'}", password: 'pw'})
+             .returns(false)
 
-    #assert_equal false, ldap_connect.login(username, password)
-  #end
+    assert_equal false, ldap_connection.login('bob', 'pw')
+  end
 
-  #test 'does not authenticate if username contains invalid characters' do
-    #username = 'bob50$'
-    #password = 'bobstar42'
+  test 'does not authenticate if username contains invalid characters' do
+    assert_equal false, ldap_connection.login('bob$', 'pw')
+  end
 
-    #Net::LDAP.expects(:new)
-             #.with(host: ldap_config[:hostname], port: ldap_config[:port], encryption: :simple_tls)
+  test 'does not authenticate if user not exists' do
+    Net::LDAP.any_instance.expects(:bind_as)
+              .with({base: 'example_basename', filter: "uid=#{'bob'}", password: 'pw'})
+              .returns(false)
 
-    #assert_equal false, ldap_connect.login(username, password)
-  #end
+    assert_equal false, ldap_connection.login('bob', 'pw')
+  end
 
-  #test 'uid raises error if non existing user' do
-    #skip()
-  #end
+  test 'does not return info if uid not exists' do
+    filter = Net::LDAP::Filter.eq('uidnumber', 1)
 
-  #test 'gets ldap info for existing user' do
-    #uid = 1
-    #username = 'bob'
-    #password = 'bobstar42'
-    #userdn = 'bobs_dn'
-    #attribute = { username: 'bob', password: 'bobstar42', userdn: 'bobs_dn' }
+    Net::LDAP::Filter.expects(:eq)
+                     .with('uidnumber', '1')
+                     .returns(filter)
 
-    #ldap_entry = mock()
-    #ldap_entry.expects(:dn).returns(userdn)
-    #ldap = mock()
-    #ldap.expects(:bind_as)
-        #.with(base: ldap_config[:basename], filter: "uid=#{username}", password: password)
-        #.returns([ ldap_entry ])
-    #Net::LDAP.expects(:new)
-             #.with(host: ldap_config[:hostname], port: ldap_config[:port], encryption: :simple_tls)
-             #.returns(ldap)
-    #ldap = mock()
-    #ldap.expects(:bind).returns(true)
-    #Net::LDAP.expects(:new)
-             #.with(host: ldap_config[:hostname],
-                   #port: ldap_config[:port],
-                   #encryption: :simple_tls,
-                   #auth: { method: :simple,
-                           #username: userdn,
-                           #password: password })
-              #.returns(ldap)
-    #ldap = mock()
-    #ldap.expects(:eq)
-        #.with('uidnumber', uid)
-        #.returns(true)
+    Net::LDAP.any_instance.expects(:search)
+        .with(base: 'example_basename', filter: filter)
+        .returns(nil)
 
-    #ldap = mock()
-    #ldap.expects(:search)
-        #.with(base: ldap_config[:basename],
-              #filter: "uidnumber=#{uid}",
-              #attributes: [attribute])
-        #.returns("bob bobstar42 bobs_dn")
+    assert_equal 'No <uid for uid 1>', ldap_connection.ldap_info('1', 'uid')
+  end
 
-    #assert_equal 'bob', ldap_connect.ldap_info(uid, attribute)
-  #end
 
-  #test 'returns error message if unable to connect' do
-    #skip()
-  #end
+  test 'does not return info if attribute not exists' do
+    filter = Net::LDAP::Filter.eq('uidnumber', 1)
+
+    Net::LDAP::Filter.expects(:eq)
+                     .with('uidnumber', '1')
+                     .returns(filter)
+
+    entry = mock()
+    entry.expects(:try)
+         .with('id')
+         .returns(nil)
+
+    Net::LDAP.any_instance.expects(:search)
+        .with(base: 'example_basename', filter: filter)
+        .returns([entry])
+
+    assert_equal 'No <id for uid 1>', ldap_connection.ldap_info('1', 'id')
+  end
+
+  test 'returns ldap info' do
+    filter = Net::LDAP::Filter.eq('uidnumber', 1)
+
+    Net::LDAP::Filter.expects(:eq)
+                     .with('uidnumber', '1')
+                     .returns(filter)
+
+    entry = mock()
+    entry.expects(:try)
+         .with('uid')
+         .returns(["bob"])
+
+    Net::LDAP.any_instance.expects(:search)
+        .with(base: 'example_basename', filter: filter)
+        .returns([entry])
+
+    assert_equal 'bob', ldap_connection.ldap_info('1', 'uid')
+  end
+
+  test 'does not return uid if username invalid' do
+    assert_nil ldap_connection.uid_by_username('bob$')
+  end
+
+  test 'returns uid by username' do
+    filter = Net::LDAP::Filter.eq('uid', 'bob')
+
+    Net::LDAP::Filter.expects(:eq)
+                     .with('uid', 'bob')
+                     .returns(filter)
+
+    entry = mock()
+    entry.expects(:uidnumber)
+         .returns([1])
+
+    Net::LDAP.any_instance.expects(:search)
+        .with(base: 'example_basename', filter: filter, attributes: ['uidnumber'])
+        .yields(entry)
+
+    assert_equal '1', ldap_connection.uid_by_username('bob')
+  end
+
+  test 'does not return uid if username not exists' do
+    assert_raises 'UID of the user not found' do
+      ldap_connection.uid_by_username('bob')
+    end
+  end
 
   def ldap_connection
      LdapConnection.new

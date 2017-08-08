@@ -17,9 +17,9 @@ include IntegrationTest::DefaultHelper
     user_bob.update_attribute(:auth, 'ldap')
 
     #Mock
-    LdapTools.stubs(:ldap_login).returns(true)
-    LdapTools.stubs(:get_ldap_info).with(User.find_by_username('bob').uid, 'givenname').returns('Bob')
-    LdapTools.stubs(:get_ldap_info).with(User.find_by_username('bob').uid, 'sn').returns('test')
+    LdapConnection.new.stubs(:login).returns(true)
+    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid, 'givenname').returns('Bob')
+    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid, 'sn').returns('test')
 
     account_path = get_account_path
 
@@ -43,9 +43,9 @@ include IntegrationTest::DefaultHelper
     user_bob.update_attributes(auth: 'ldap')
 
     #Mock
-    LdapTools.stubs(:ldap_login).returns(true)
-    LdapTools.stubs(:get_ldap_info).with(User.find_by_username('bob').uid.to_s, 'givenname').returns('Bob')
-    LdapTools.stubs(:get_ldap_info).with(User.find_by_username('bob').uid.to_s, 'sn').returns('test')
+    LdapConnection.new.stubs(:login).returns(true)
+    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid.to_s, 'givenname').returns('Bob')
+    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid.to_s, 'sn').returns('test')
 
     account_path = get_account_path
 
@@ -72,9 +72,9 @@ include IntegrationTest::DefaultHelper
     user_bob.update_attribute(:auth, 'ldap')
 
     #Mock
-    LdapTools.stubs(:ldap_login).returns(true)
-    LdapTools.stubs(:get_ldap_info).with(User.find_by_username('bob').uid, 'givenname').returns('Bob')
-    LdapTools.stubs(:get_ldap_info).with(User.find_by_username('bob').uid, 'sn').returns('test')
+    LdapConnection.new.stubs(:login).returns(true)
+    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid, 'givenname').returns('Bob')
+    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid, 'sn').returns('test')
 
     login_as('bob')
 
@@ -91,9 +91,9 @@ include IntegrationTest::DefaultHelper
     user_bob.update_attribute(:auth, 'ldap')
 
     #Mock
-    LdapTools.stubs(:ldap_login).returns(true)
-    LdapTools.stubs(:get_ldap_info).with(User.find_by_username('bob').uid, 'givenname').returns('Bob')
-    LdapTools.stubs(:get_ldap_info).with(User.find_by_username('bob').uid, 'sn').returns('test')
+    LdapConnection.new.stubs(:login).returns(true)
+    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid, 'givenname').returns('Bob')
+    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid, 'sn').returns('test')
 
     #Test if Bob can see his account (should not)
     # cannot_access_account(get_account_path, 'bob')
@@ -101,7 +101,7 @@ include IntegrationTest::DefaultHelper
     login_as('bob')
 
     #Recrypt
-    LdapTools.stubs(:ldap_login).returns(false)
+    LdapConnection.new.stubs(:login).returns(false)
     post recryptrequests_recrypt_path, new_password: 'wrong_password'
 
     #Test if user got error messages
@@ -114,9 +114,9 @@ include IntegrationTest::DefaultHelper
     user_bob.update_attribute(:auth, 'ldap')
 
     #Mock
-    LdapTools.stubs(:ldap_login).returns(true)
-    LdapTools.stubs(:get_ldap_info).with(User.find_by_username('bob').uid, 'givenname').returns('Bob')
-    LdapTools.stubs(:get_ldap_info).with(User.find_by_username('bob').uid, 'sn').returns('test')
+    LdapConnection.new.stubs(:login).returns(true)
+    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid, 'givenname').returns('Bob')
+    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid, 'sn').returns('test')
 
     #Test if Bob can see his account (should not)
     # cannot_access_account(get_account_path, 'bob')
@@ -124,7 +124,7 @@ include IntegrationTest::DefaultHelper
     login_as('bob')
 
     #Recrypt
-    LdapTools.stubs(:ldap_login).returns(false)
+    LdapConnection.new.stubs(:login).returns(false)
     post recryptrequests_recrypt_path, forgot_password: true, new_password: 'wrong_password'
 
     #Test if user got error messages

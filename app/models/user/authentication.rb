@@ -19,7 +19,6 @@ class User
 
     def authenticate_ldap(cleartext_password)
       LdapConnection.new.login(username, cleartext_password)
-      #LdapTools.ldap_login(username, cleartext_password)
     end
 
     def authenticate_db(cleartext_password)

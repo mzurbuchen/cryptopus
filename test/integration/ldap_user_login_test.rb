@@ -14,9 +14,9 @@ include IntegrationTest::DefaultHelper
     user_bob.update_attribute(:auth, 'ldap')
 
     # Mock
-    LdapTools.stubs(:ldap_login).returns(true)
-    LdapTools.stubs(:get_ldap_info).with(user_bob.uid, 'givenname').returns('Bob')
-    LdapTools.stubs(:get_ldap_info).with(user_bob.uid, 'sn').returns('test')
+    LdapConnection.new.stubs(:login).returns(true)
+    LdapConnection.new.stubs(:ldap_info).with(user_bob.uid, 'givenname').returns('Bob')
+    LdapConnection.new.stubs(:ldap_info).with(user_bob.uid, 'sn').returns('test')
 
     # login
     login_as('bob')

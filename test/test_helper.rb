@@ -44,10 +44,10 @@ class ActiveSupport::TestCase
 
   #Disable LDAP connection
   def stub_ldap_tools
-    LdapTools.stubs(:ldap_login)
-    LdapTools.stubs(:get_uid_by_username).returns(42)
-    LdapTools.stubs(:connect)
-    LdapTools.stubs(:get_ldap_info)
+    LdapConnection.new.stubs(:login)
+    LdapConnection.new.stubs(:uid_by_username).returns(42)
+    LdapConnection.new.stubs(:connect)
+    LdapConnection.new.stubs(:ldap_info)
   end
 
   def legacy_encrypt_private_key(private_key, password)
