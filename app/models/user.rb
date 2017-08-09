@@ -85,15 +85,19 @@ class User < ActiveRecord::Base
 
     private
 
+    def ldap_connection
+      LdapConnection.new
+    end
+
     def authenticate_ldap(username, cleartext_password)
-      LdapConnection.new.login(username, cleartext_password)
+      ldap_connection.login(username, cleartext_password)
     end
 
     def create_from_ldap(username, password)
       user = new
       user.username = username
       user.auth = 'ldap'
-      user.uid = LdapConnection.uid_by_username(username)
+      user.uid = ldap_connection.uidnumber_by_username(username)
       user.create_keypair password
       user.update_info
       user
@@ -101,6 +105,8 @@ class User < ActiveRecord::Base
       raise Exceptions::UserCreationFailed
     end
   end
+
+  # Instance Methods
 
   def last_teammember_in_any_team?
     last_teammember_teams.any?
@@ -256,8 +262,8 @@ class User < ActiveRecord::Base
 
   # Updates Information about the user from LDAP
   def update_info_from_ldap
-    self.givenname = LdapConnection.ldap_info(uid.to_s, 'givenname')
-    self.surname   = LdapConnection.ldap_info(uid.to_s, 'sn')
+    self.givenname = ldap_connection.ldap_info(uid.to_s, 'givenname')
+    self.surname   = ldap_connection.ldap_info(uid.to_s, 'sn')
   end
 
   def protect_if_last_teammember
@@ -273,4 +279,5 @@ class User < ActiveRecord::Base
       end
     end
   end
+
 end

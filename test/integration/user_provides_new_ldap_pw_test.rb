@@ -15,11 +15,12 @@ include IntegrationTest::DefaultHelper
     #Prepare for Test
     user_bob = users(:bob)
     user_bob.update_attribute(:auth, 'ldap')
+    user_bob.update_attribute(:uid, 42)
 
     #Mock
-    LdapConnection.new.stubs(:login).returns(true)
-    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid, 'givenname').returns('Bob')
-    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid, 'sn').returns('test')
+    LdapConnection.any_instance.stubs(:login).returns(true)
+    LdapConnection.any_instance.stubs(:ldap_info).with(42, 'givenname').returns('Bob')
+    LdapConnection.any_instance.stubs(:ldap_info).with(42, 'sn').returns('test')
 
     account_path = get_account_path
 
@@ -41,11 +42,12 @@ include IntegrationTest::DefaultHelper
     #Prepare for Test
     user_bob = users(:bob)
     user_bob.update_attributes(auth: 'ldap')
+    user_bob.update_attribute(:uid, 42)
 
     #Mock
-    LdapConnection.new.stubs(:login).returns(true)
-    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid.to_s, 'givenname').returns('Bob')
-    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid.to_s, 'sn').returns('test')
+    LdapConnection.any_instance.stubs(:login).returns(true)
+    LdapConnection.any_instance.stubs(:ldap_info).with(42, 'givenname').returns('Bob')
+    LdapConnection.any_instance.stubs(:ldap_info).with(42, 'sn').returns('test')
 
     account_path = get_account_path
 
@@ -70,11 +72,12 @@ include IntegrationTest::DefaultHelper
     #Prepare for Test
     user_bob = users(:bob)
     user_bob.update_attribute(:auth, 'ldap')
+    user_bob.update_attribute(:uid, 42)
 
     #Mock
-    LdapConnection.new.stubs(:login).returns(true)
-    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid, 'givenname').returns('Bob')
-    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid, 'sn').returns('test')
+    LdapConnection.any_instance.stubs(:login).returns(true)
+    LdapConnection.any_instance.stubs(:ldap_info).with(42, 'givenname').returns('Bob')
+    LdapConnection.any_instance.stubs(:ldap_info).with(42, 'sn').returns('test')
 
     login_as('bob')
 
@@ -89,11 +92,12 @@ include IntegrationTest::DefaultHelper
     #Prepare for Test
     user_bob = users(:bob)
     user_bob.update_attribute(:auth, 'ldap')
+    user_bob.update_attribute(:uid, 42)
 
     #Mock
-    LdapConnection.new.stubs(:login).returns(true)
-    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid, 'givenname').returns('Bob')
-    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid, 'sn').returns('test')
+    LdapConnection.any_instance.stubs(:login).returns(true)
+    LdapConnection.any_instance.stubs(:ldap_info).with(42, 'givenname').returns('Bob')
+    LdapConnection.any_instance.stubs(:ldap_info).with(42, 'sn').returns('test')
 
     #Test if Bob can see his account (should not)
     # cannot_access_account(get_account_path, 'bob')
@@ -101,7 +105,7 @@ include IntegrationTest::DefaultHelper
     login_as('bob')
 
     #Recrypt
-    LdapConnection.new.stubs(:login).returns(false)
+    LdapConnection.any_instance.stubs(:login).returns(false)
     post recryptrequests_recrypt_path, new_password: 'wrong_password'
 
     #Test if user got error messages
@@ -112,11 +116,12 @@ include IntegrationTest::DefaultHelper
     #Prepare for Test
     user_bob = users(:bob)
     user_bob.update_attribute(:auth, 'ldap')
+    user_bob.update_attribute(:uid, 42)
 
     #Mock
-    LdapConnection.new.stubs(:login).returns(true)
-    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid, 'givenname').returns('Bob')
-    LdapConnection.new.stubs(:ldap_info).with(User.uid_by_username('bob').uid, 'sn').returns('test')
+    LdapConnection.any_instance.stubs(:login).returns(true)
+    LdapConnection.any_instance.stubs(:ldap_info).with(42, 'givenname').returns('Bob')
+    LdapConnection.any_instance.stubs(:ldap_info).with(42, 'sn').returns('test')
 
     #Test if Bob can see his account (should not)
     # cannot_access_account(get_account_path, 'bob')
@@ -124,7 +129,7 @@ include IntegrationTest::DefaultHelper
     login_as('bob')
 
     #Recrypt
-    LdapConnection.new.stubs(:login).returns(false)
+    LdapConnection.any_instance.stubs(:login).returns(false)
     post recryptrequests_recrypt_path, forgot_password: true, new_password: 'wrong_password'
 
     #Test if user got error messages

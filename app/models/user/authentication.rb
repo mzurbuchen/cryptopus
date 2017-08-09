@@ -18,12 +18,16 @@ class User
     private
 
     def authenticate_ldap(cleartext_password)
-      LdapConnection.new.login(username, cleartext_password)
+      ldap_connection.login(username, cleartext_password)
     end
 
     def authenticate_db(cleartext_password)
       salt = password.split('$')[1]
       password.split('$')[2] == Digest::SHA512.hexdigest(salt + cleartext_password)
+    end
+
+    def ldap_connection
+      LdapConnection.new
     end
   end
 end

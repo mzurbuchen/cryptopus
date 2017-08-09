@@ -18,17 +18,17 @@ class LdapConnectionTest <  ActiveSupport::TestCase
   end
 
   test 'authenticates with valid user password' do
-  entry = mock()
-  entry.expects(:dn)
+  user_entry = mock()
+  user_entry.expects(:dn)
              .returns('uid=bob,ou=puzzle,ou=users,dc=puzzle,dc=itc')
 
     Net::LDAP.any_instance.expects(:bind_as)
              .with({base: 'example_basename', filter: "uid=#{'bob'}", password: 'pw'})
-             .returns([entry])
+             .returns([user_entry])
 
     Net::LDAP.any_instance.expects(:bind)
              .returns(true)
-
+    unstub_ldap_tools
     assert_equal true, ldap_connection.login('bob', 'pw')
   end
 
@@ -37,22 +37,27 @@ class LdapConnectionTest <  ActiveSupport::TestCase
              .with({base: 'example_basename', filter: "uid=#{'bob'}", password: 'pw'})
              .returns(false)
 
+    unstub_ldap_tools
     assert_equal false, ldap_connection.login('bob', 'pw')
   end
 
   test 'does not authenticate if username contains invalid characters' do
+    Net::LDAP.any_instance.expects(:bind_as).never
+
+    unstub_ldap_tools
     assert_equal false, ldap_connection.login('bob$', 'pw')
   end
 
-  test 'does not authenticate if user not exists' do
+  test 'does not authenticate if user does not exist' do
     Net::LDAP.any_instance.expects(:bind_as)
-              .with({base: 'example_basename', filter: "uid=#{'bob'}", password: 'pw'})
+              .with({base: 'example_basename', filter: "uid=#{'mrunknown'}", password: 'pw'})
               .returns(false)
 
-    assert_equal false, ldap_connection.login('bob', 'pw')
+    unstub_ldap_tools
+    assert_equal false, ldap_connection.login('mrunknown', 'pw')
   end
 
-  test 'does not return info if uid not exists' do
+  test 'does not return info if uid does not exist' do
     filter = Net::LDAP::Filter.eq('uidnumber', 1)
 
     Net::LDAP::Filter.expects(:eq)
@@ -63,11 +68,12 @@ class LdapConnectionTest <  ActiveSupport::TestCase
         .with(base: 'example_basename', filter: filter)
         .returns(nil)
 
+    unstub_ldap_tools
     assert_equal 'No <uid for uid 1>', ldap_connection.ldap_info('1', 'uid')
   end
 
 
-  test 'does not return info if attribute not exists' do
+  test 'does not return info if attribute does not exist' do
     filter = Net::LDAP::Filter.eq('uidnumber', 1)
 
     Net::LDAP::Filter.expects(:eq)
@@ -76,14 +82,14 @@ class LdapConnectionTest <  ActiveSupport::TestCase
 
     entry = mock()
     entry.expects(:try)
-         .with('id')
-         .returns(nil)
+         .with('unknown_attr')
 
     Net::LDAP.any_instance.expects(:search)
         .with(base: 'example_basename', filter: filter)
         .returns([entry])
 
-    assert_equal 'No <id for uid 1>', ldap_connection.ldap_info('1', 'id')
+    unstub_ldap_tools
+    assert_equal 'No <unknown_attr for uid 1>', ldap_connection.ldap_info('1', 'unknown_attr')
   end
 
   test 'returns ldap info' do
@@ -102,14 +108,18 @@ class LdapConnectionTest <  ActiveSupport::TestCase
         .with(base: 'example_basename', filter: filter)
         .returns([entry])
 
+    unstub_ldap_tools
     assert_equal 'bob', ldap_connection.ldap_info('1', 'uid')
   end
 
-  test 'does not return uid if username invalid' do
-    assert_nil ldap_connection.uid_by_username('bob$')
+  test 'does not return uidnumber if username invalid' do
+    Net::LDAP.any_instance.expects(:search).never
+
+    unstub_ldap_tools
+    assert_nil ldap_connection.uidnumber_by_username('bob$')
   end
 
-  test 'returns uid by username' do
+  test 'returns uidnumber by username' do
     filter = Net::LDAP::Filter.eq('uid', 'bob')
 
     Net::LDAP::Filter.expects(:eq)
@@ -124,12 +134,14 @@ class LdapConnectionTest <  ActiveSupport::TestCase
         .with(base: 'example_basename', filter: filter, attributes: ['uidnumber'])
         .yields(entry)
 
-    assert_equal '1', ldap_connection.uid_by_username('bob')
+    unstub_ldap_tools
+    assert_equal '1', ldap_connection.uidnumber_by_username('bob')
   end
 
-  test 'does not return uid if username not exists' do
-    assert_raises 'UID of the user not found' do
-      ldap_connection.uid_by_username('bob')
+  test 'does not return uidnumber if username not exists' do
+    assert_raises 'No uidnumber for user unknown_user found' do
+      unstub_ldap_tools
+      ldap_connection.uidnumber_by_username('bob')
     end
   end
 

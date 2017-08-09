@@ -32,11 +32,11 @@ class LdapConnection
   def ldap_info(uidnumber, attribute)
     filter = Net::LDAP::Filter.eq('uidnumber', uidnumber)
     result = connection.search(base: settings[:basename],
-                               filter: filter).try(:first).try(attribute).try :first
+                               filter: filter).try(:first).try(attribute).try(:first)
     result.present? ? result : "No <#{attribute} for uid #{uidnumber}>"
   end
 
-  def uid_by_username(username)
+  def uidnumber_by_username(username)
     return unless username_valid?(username)
     filter = Net::LDAP::Filter.eq('uid', username)
     connection.search(base: settings[:basename],
