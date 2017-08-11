@@ -70,8 +70,8 @@ class UserTest < ActiveSupport::TestCase
 
   test 'create user from ldap' do
     LdapConnection.any_instance.expects(:uidnumber_by_username).returns(42)
-    LdapConnection.any_instance.expects(:ldap_info).with('42', 'givenname').returns("bob")
-    LdapConnection.any_instance.expects(:ldap_info).with('42', 'sn').returns("test")
+    LdapConnection.any_instance.expects(:ldap_info).with(42, 'givenname').returns("bob")
+    LdapConnection.any_instance.expects(:ldap_info).with(42, 'sn').returns("test")
 
     user = User.send(:create_from_ldap, 'bob', 'password')
 

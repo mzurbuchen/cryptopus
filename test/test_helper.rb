@@ -19,7 +19,7 @@ ActiveRecord::Migration.maintain_test_schema!
 Dir[Rails.root.join('test/support/**/*.rb')].sort.each { |f| require f }
 
 SimpleCov.start 'rails' do
-  add_filter 'lib/ldap_tools.rb'
+  add_filter 'lib/ldap_connection.rb'
   add_filter 'app/helpers'
   coverage_dir 'test/coverage'
 end
@@ -33,7 +33,7 @@ end
 
 
 class ActiveSupport::TestCase
-  setup :stub_ldap_tools
+  setup :stub_ldap_connection
 
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
@@ -43,14 +43,14 @@ class ActiveSupport::TestCase
   end
 
   #Disable LDAP connection
-  def stub_ldap_tools
+  def stub_ldap_connection
     LdapConnection.any_instance.stubs(:login)
     LdapConnection.any_instance.stubs(:uidnumber_by_username).returns(42)
     LdapConnection.any_instance.stubs(:connect)
     LdapConnection.any_instance.stubs(:ldap_info)
   end
 
-  def unstub_ldap_tools
+  def unstub_ldap_connection
     LdapConnection.any_instance.unstub(:login)
     LdapConnection.any_instance.unstub(:uidnumber_by_username)
     LdapConnection.any_instance.unstub(:connect)

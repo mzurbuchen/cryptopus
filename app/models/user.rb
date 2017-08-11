@@ -262,8 +262,8 @@ class User < ActiveRecord::Base
 
   # Updates Information about the user from LDAP
   def update_info_from_ldap
-    self.givenname = ldap_connection.ldap_info(uid.to_s, 'givenname')
-    self.surname   = ldap_connection.ldap_info(uid.to_s, 'sn')
+    self.givenname = ldap_connection.ldap_info(uid, 'givenname')
+    self.surname   = ldap_connection.ldap_info(uid, 'sn')
   end
 
   def protect_if_last_teammember

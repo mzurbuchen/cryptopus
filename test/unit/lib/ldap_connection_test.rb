@@ -8,6 +8,8 @@
 require 'test_helper'
 class LdapConnectionTest <  ActiveSupport::TestCase
 
+  setup :unstub_ldap_connection
+
   LdapConnection::MANDATORY_LDAP_SETTING_KEYS.each do |k|
     test "raises error on missing mandatory setting value: #{k}" do
       Setting.find_by(key: "ldap_#{k}").update!(value: '')
@@ -28,7 +30,6 @@ class LdapConnectionTest <  ActiveSupport::TestCase
 
     Net::LDAP.any_instance.expects(:bind)
              .returns(true)
-    unstub_ldap_tools
     assert_equal true, ldap_connection.login('bob', 'pw')
   end
 
@@ -37,14 +38,12 @@ class LdapConnectionTest <  ActiveSupport::TestCase
              .with({base: 'example_basename', filter: "uid=#{'bob'}", password: 'pw'})
              .returns(false)
 
-    unstub_ldap_tools
     assert_equal false, ldap_connection.login('bob', 'pw')
   end
 
   test 'does not authenticate if username contains invalid characters' do
     Net::LDAP.any_instance.expects(:bind_as).never
 
-    unstub_ldap_tools
     assert_equal false, ldap_connection.login('bob$', 'pw')
   end
 
@@ -53,7 +52,6 @@ class LdapConnectionTest <  ActiveSupport::TestCase
               .with({base: 'example_basename', filter: "uid=#{'mrunknown'}", password: 'pw'})
               .returns(false)
 
-    unstub_ldap_tools
     assert_equal false, ldap_connection.login('mrunknown', 'pw')
   end
 
@@ -68,10 +66,20 @@ class LdapConnectionTest <  ActiveSupport::TestCase
         .with(base: 'example_basename', filter: filter)
         .returns(nil)
 
-    unstub_ldap_tools
     assert_equal 'No <uid for uid 1>', ldap_connection.ldap_info('1', 'uid')
   end
 
+  test 'raises exception if missing parameter' do
+    assert_raises ArgumentError do
+      ldap_connection.ldap_info(nil, nil)
+    end
+    assert_raises ArgumentError do
+      ldap_connection.ldap_info('uidnumber', nil)
+    end
+    assert_raises ArgumentError do
+      ldap_connection.ldap_info(nil, '1')
+    end
+  end
 
   test 'does not return info if attribute does not exist' do
     filter = Net::LDAP::Filter.eq('uidnumber', 1)
@@ -88,7 +96,6 @@ class LdapConnectionTest <  ActiveSupport::TestCase
         .with(base: 'example_basename', filter: filter)
         .returns([entry])
 
-    unstub_ldap_tools
     assert_equal 'No <unknown_attr for uid 1>', ldap_connection.ldap_info('1', 'unknown_attr')
   end
 
@@ -108,14 +115,12 @@ class LdapConnectionTest <  ActiveSupport::TestCase
         .with(base: 'example_basename', filter: filter)
         .returns([entry])
 
-    unstub_ldap_tools
     assert_equal 'bob', ldap_connection.ldap_info('1', 'uid')
   end
 
   test 'does not return uidnumber if username invalid' do
     Net::LDAP.any_instance.expects(:search).never
 
-    unstub_ldap_tools
     assert_nil ldap_connection.uidnumber_by_username('bob$')
   end
 
@@ -134,13 +139,11 @@ class LdapConnectionTest <  ActiveSupport::TestCase
         .with(base: 'example_basename', filter: filter, attributes: ['uidnumber'])
         .yields(entry)
 
-    unstub_ldap_tools
     assert_equal '1', ldap_connection.uidnumber_by_username('bob')
   end
 
   test 'does not return uidnumber if username not exists' do
     assert_raises 'No uidnumber for user unknown_user found' do
-      unstub_ldap_tools
       ldap_connection.uidnumber_by_username('bob')
     end
   end
