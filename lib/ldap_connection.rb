@@ -34,7 +34,7 @@ class LdapConnection
     filter = Net::LDAP::Filter.eq('uidnumber', uidnumber.to_s)
     result = connection.search(base: settings[:basename],
                                filter: filter).try(:first).try(attribute).try(:first)
-    result.present? ? result : "No <#{attribute} for uid #{uidnumber.to_s}>"
+    result.present? ? result : "No <#{attribute} for uid #{uidnumber}>"
   end
 
   def uidnumber_by_username(username)
@@ -70,8 +70,16 @@ class LdapConnection
   end
 
   def connection(options = {})
-    params = { host: settings[:hostname], port: settings[:portnumber], encryption: :simple_tls }
-    params.merge(options)
-    Net::LDAP.new(params)
+    settings[:hostname].each do |host|
+      params = { host: host, port: settings[:portnumber], encryption: :simple_tls }
+      params.merge(options)
+      begin
+        ldap = Net::LDAP.new(params)
+        ldap.bind
+        return ldap
+      rescue
+      end
+    end
   end
+
 end

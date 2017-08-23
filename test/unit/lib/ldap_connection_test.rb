@@ -12,7 +12,7 @@ class LdapConnectionTest <  ActiveSupport::TestCase
 
   LdapConnection::MANDATORY_LDAP_SETTING_KEYS.each do |k|
     test "raises error on missing mandatory setting value: #{k}" do
-      Setting.find_by(key: "ldap_#{k}").update!(value: '')
+      Setting.find_by(key: "ldap_#{k}").update!(value: nil)
       assert_raises ArgumentError do
         ldap_connection
       end
@@ -29,11 +29,15 @@ class LdapConnectionTest <  ActiveSupport::TestCase
              .returns([user_entry])
 
     Net::LDAP.any_instance.expects(:bind)
+             .times(3)
              .returns(true)
     assert_equal true, ldap_connection.login('bob', 'pw')
   end
 
   test 'does not authenticate with valid user but invalid password' do
+    Net::LDAP.any_instance.expects(:bind)
+        .returns(true)
+
     Net::LDAP.any_instance.expects(:bind_as)
              .with({base: 'example_basename', filter: "uid=#{'bob'}", password: 'pw'})
              .returns(false)
@@ -48,6 +52,9 @@ class LdapConnectionTest <  ActiveSupport::TestCase
   end
 
   test 'does not authenticate if user does not exist' do
+    Net::LDAP.any_instance.expects(:bind)
+        .returns(true)
+
     Net::LDAP.any_instance.expects(:bind_as)
               .with({base: 'example_basename', filter: "uid=#{'mrunknown'}", password: 'pw'})
               .returns(false)
@@ -57,6 +64,9 @@ class LdapConnectionTest <  ActiveSupport::TestCase
 
   test 'does not return info if uid does not exist' do
     filter = Net::LDAP::Filter.eq('uidnumber', 1)
+
+    Net::LDAP.any_instance.expects(:bind)
+        .returns(true)
 
     Net::LDAP::Filter.expects(:eq)
                      .with('uidnumber', '1')
@@ -84,6 +94,9 @@ class LdapConnectionTest <  ActiveSupport::TestCase
   test 'does not return info if attribute does not exist' do
     filter = Net::LDAP::Filter.eq('uidnumber', 1)
 
+    Net::LDAP.any_instance.expects(:bind)
+        .returns(true)
+
     Net::LDAP::Filter.expects(:eq)
                      .with('uidnumber', '1')
                      .returns(filter)
@@ -101,6 +114,9 @@ class LdapConnectionTest <  ActiveSupport::TestCase
 
   test 'returns ldap info' do
     filter = Net::LDAP::Filter.eq('uidnumber', 1)
+
+    Net::LDAP.any_instance.expects(:bind)
+        .returns(true)
 
     Net::LDAP::Filter.expects(:eq)
                      .with('uidnumber', '1')
@@ -126,6 +142,9 @@ class LdapConnectionTest <  ActiveSupport::TestCase
 
   test 'returns uidnumber by username' do
     filter = Net::LDAP::Filter.eq('uid', 'bob')
+
+    Net::LDAP.any_instance.expects(:bind)
+        .returns(true)
 
     Net::LDAP::Filter.expects(:eq)
                      .with('uid', 'bob')
