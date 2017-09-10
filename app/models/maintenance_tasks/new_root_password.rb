@@ -12,6 +12,7 @@ class MaintenanceTasks::NewRootPassword < MaintenanceTask
                teams can no longer be accessed by root.'
   self.task_params = [{ label: :new_root_password, type: PARAM_TYPE_PASSWORD },
                       { label: :retype_password, type: PARAM_TYPE_PASSWORD }]
+  self.executable = true
 
   def execute
     super do

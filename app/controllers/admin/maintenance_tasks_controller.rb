@@ -7,10 +7,36 @@
 
 class Admin::MaintenanceTasksController < Admin::AdminController
 
+  helper_method :removed_ldap_users
+
   # GET /admin/maintenance_tasks
   def index
+#    #defining @soloteams for further use in destroy action
+#    if flash[:user_to_delete].present?
+#      user_to_delete = User.find(flash[:user_to_delete])
+#      @soloteams = teams_to_delete(user_to_delete)
+#    end
+#
+#    @users = User.where('uid != 0 or uid is null')
+#
+#    respond_to do |format|
+#      format.html
+#    end
+
     @maintenance_tasks = MaintenanceTask.list
     @maintenance_logs = Log.where(log_type: 'maintenance_task')
+  end
+
+  # DELETE /admin/users/1
+  def destroy
+    require 'pry'; binding.pry
+    user.destroy
+
+    respond_to do |format|
+      format.html do
+        redirect_to admin_users_path
+      end
+    end
   end
 
   # GET /admin/maintenance_tasks/1/prepare
@@ -33,5 +59,28 @@ class Admin::MaintenanceTasksController < Admin::AdminController
       flash[:error] = t('flashes.admin.maintenance_tasks.failed')
     end
     redirect_to admin_maintenance_tasks_path
+  end
+
+  def removed_ldap_users
+    if Setting.value('ldap', 'enable') == false
+      raise 'cannot list removed ldap users if ldap is disabled'
+    end
+
+    ldap_connection = LdapConnection.new
+
+    User.ldap.collect do |user|
+      user unless ldap_connection.exists?(user.username)
+    end.compact
+
+  end
+
+  private
+
+  def user
+    @user ||= User.find(params[:id])
+  end
+
+  def ldap_usernames
+    User.ldap.collect { |user| user.username }
   end
 end
