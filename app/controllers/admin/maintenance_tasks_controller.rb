@@ -11,25 +11,12 @@ class Admin::MaintenanceTasksController < Admin::AdminController
 
   # GET /admin/maintenance_tasks
   def index
-#    #defining @soloteams for further use in destroy action
-#    if flash[:user_to_delete].present?
-#      user_to_delete = User.find(flash[:user_to_delete])
-#      @soloteams = teams_to_delete(user_to_delete)
-#    end
-#
-#    @users = User.where('uid != 0 or uid is null')
-#
-#    respond_to do |format|
-#      format.html
-#    end
-
     @maintenance_tasks = MaintenanceTask.list
     @maintenance_logs = Log.where(log_type: 'maintenance_task')
   end
 
   # DELETE /admin/users/1
   def destroy
-    require 'pry'; binding.pry
     user.destroy
 
     respond_to do |format|

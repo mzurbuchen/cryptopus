@@ -10,24 +10,4 @@ class MaintenanceTasks::ListRemovedLdapUsers < MaintenanceTask
   self.description = 'Lists the ldap users which have been removed.'
   self.task_params = [{ label: 'ListRemovedLdapUsers' }]
   self.executable = false
-
-  def execute
-    super do
-      raise 'Only admins can run this Task' unless @current_user.admin?
-
-      list_removed_ldap_users
-
-      list_all_users
-    end
-  end
-
-  private
-
-  def list_removed_ldap_users
-    User.find_each { |user| return user unless user.present? }
-  end
-
-  def list_all_users
-
-  end
 end

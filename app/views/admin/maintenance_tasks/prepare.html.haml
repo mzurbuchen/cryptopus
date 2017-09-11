@@ -4,13 +4,15 @@
 -#  https://github.com/puzzle/cryptopus.
 
 %h1= @maintenance_task.label
-= form_tag :admin_maintenance_tasks_execute do
-  - @maintenance_task.task_params.each do |p|
-    - if p.first.second == 'ListRemovedLdapUsers'
-      = render partial: 'list_removed_ldap_users'
-    - else
-      = create_maintenance_task_field(p)
+- unless @maintenance_task.label == 'List removed ldap users'
+  = form_tag :admin_maintenance_tasks_execute
 
-  - if @maintenance_task.executable == true
-    = submit_tag "execute", class: 'btn btn-primary'
-  =link_to "Cancel", admin_maintenance_tasks_path, {:class=>"btn btn-primary"}
+- @maintenance_task.task_params.each do |p|
+  - if p.first.second == 'ListRemovedLdapUsers'
+    = render partial: 'list_removed_ldap_users'
+  - else
+    = create_maintenance_task_field(p)
+
+- if @maintenance_task.executable == true
+  = submit_tag "execute", class: 'btn btn-primary'
+=link_to "Cancel", admin_maintenance_tasks_path, {:class=>"btn btn-primary"}
