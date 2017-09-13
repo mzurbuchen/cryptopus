@@ -47,6 +47,8 @@ class User < ApplicationRecord
 
   scope :admins, (-> { where(admin: true) })
 
+  scope :ldap, (-> { where(auth: 'ldap') })
+
   default_scope { order('username') }
 
   before_destroy :protect_if_last_teammember
@@ -76,6 +78,14 @@ class User < ApplicationRecord
     def root
       find_by(uid: 0)
     end
+  end
+
+  def removed_ldap_users
+    if Setting.value('ldap', 'enable') == false
+      raise 'cannot list removed ldap users if ldap auth is disabled'
+    end
+    usernames_not_existing_users = ldap_usernames.each { |username| username unless ldap_connection.exists?(username) }
+    usernames_not_existing_users.collect { |username| User.find_by(username: username) }
   end
 
   # Instance Methods
@@ -242,4 +252,7 @@ class User < ApplicationRecord
     end
   end
 
+  def ldap_usernames
+    User.ldap.collect { |user| user.username }
+  end
 end

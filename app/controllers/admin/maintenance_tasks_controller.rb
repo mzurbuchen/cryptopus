@@ -7,6 +7,8 @@
 
 class Admin::MaintenanceTasksController < Admin::AdminController
 
+  helper_method :removed_ldap_users
+
   # GET /admin/maintenance_tasks
   def index
     @maintenance_tasks = MaintenanceTask.list
@@ -33,5 +35,24 @@ class Admin::MaintenanceTasksController < Admin::AdminController
       flash[:error] = t('flashes.admin.maintenance_tasks.failed')
     end
     redirect_to admin_maintenance_tasks_path
+  end
+
+  def removed_ldap_users
+    if Setting.value('ldap', 'enable') == false
+      raise 'cannot list removed ldap users if ldap is disabled'
+    end
+
+    ldap_connection = LdapConnection.new
+
+    User.ldap.collect do |user|
+      user unless ldap_connection.exists?(user.username)
+    end.compact
+
+  end
+
+  private
+
+  def ldap_usernames
+    User.ldap.collect { |user| user.username }
   end
 end
