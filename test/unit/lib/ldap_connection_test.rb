@@ -185,6 +185,46 @@ class LdapConnectionTest <  ActiveSupport::TestCase
     assert_equal 'No uidnumber for uid unknownuser', error.message
   end
 
+  test 'returns false if username invalid' do
+    Net::LDAP.any_instance.expects(:search).never
+
+    assert_equal false, ldap_connection.exists?('bob$')
+  end
+
+  test 'returns true if ldap user exists' do
+    filter = Net::LDAP::Filter.eq('uid', 'bob')
+
+    Net::LDAP.any_instance.expects(:bind)
+        .returns(true)
+
+    Net::LDAP::Filter.expects(:eq)
+                     .with('uid', 'bob')
+                     .returns(filter)
+
+    Net::LDAP.any_instance.expects(:search)
+        .with(base: 'example_basename', filter: filter)
+        .returns(["bob"])
+
+    assert_equal true, ldap_connection.exists?('bob')
+  end
+
+  test 'returns false if ldap user not exists' do
+    filter = Net::LDAP::Filter.eq('uid', 'bob')
+
+    Net::LDAP.any_instance.expects(:bind)
+        .returns(true)
+
+    Net::LDAP::Filter.expects(:eq)
+                     .with('uid', 'bob')
+                     .returns(filter)
+
+    Net::LDAP.any_instance.expects(:search)
+        .with(base: 'example_basename', filter: filter)
+        .returns(nil)
+
+    assert_equal false, ldap_connection.exists?('bob')
+  end
+
   def ldap_connection
      LdapConnection.new
   end

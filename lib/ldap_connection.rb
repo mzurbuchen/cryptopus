@@ -50,7 +50,7 @@ class LdapConnection
   end
 
   def exists?(username)
-    return unless username_valid?(username)
+    return false unless username_valid?(username)
 
     filter = Net::LDAP::Filter.eq('uid', username)
     result = connection.search(base: settings[:basename],
